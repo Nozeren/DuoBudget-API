@@ -21,6 +21,11 @@ class Users():
             return users
     
     async def insert_user(self, user:UserModel):
-        query = "INSERT INTO users (name, color) VALUES ($1, $2)"
+        query = "INSERT INTO users (name, color) VALUES ($1, $2) RETURNING *"
         async with database.pool.acquire() as conn:
             await conn.execute(query, user.name, user.color)
+        
+    async def delete_user(self, user_id: int):
+        query = "DELETE FROM users WHERE id = $1 RETURNING *"
+        async with database.pool.acquire() as conn:
+            await conn.execute(query, user_id)

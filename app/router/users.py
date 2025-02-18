@@ -10,3 +10,7 @@ async def get_all_users():
 @users_router.post('/')
 async def insert_user(user: UserModel):
     return await Users().insert_user(user) 
+
+@users_router.delete('/{id}')
+async def delete_user(id:int):
+    return await Users().delete_user(id) 
