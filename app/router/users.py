@@ -4,7 +4,7 @@ from db.queries.users import UserModel, Users
 users_router = APIRouter(prefix="/users")
 
 @users_router.get('/')
-async def get_all_users():
+async def get_all_users()->list[UserModel]:
     return await Users().get_all_users()
 
 @users_router.post('/')
