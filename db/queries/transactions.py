@@ -31,7 +31,8 @@ class Transactions():
                         left join banks as b
                         on t.bank_id = b.id
                         left join users as u
-                        on t.user_id= u.id"""
+                        on t.user_id= u.id
+                        ORDER BY t.posted_date DESC"""
         async with self.database.pool.acquire() as conn:
             rows = await conn.fetch(query)
             rows = [row for row in rows]
@@ -66,4 +67,21 @@ class Transactions():
                 return TransactionsModel(id=result['id'], posted_date=datetime.strftime(result['posted_date'], '%Y-%m-%d'), description=result['description'], user_id=result['user_id'], bank_id=result['bank_id'],
                                          subcategory_id=result['subcategory_id'], shared_amount=result['shared_amount'],
                                          amount=result['amount'])
+            return None
+
+    async def saveImportedData(self):
+        query = """INSERT INTO transactions (posted_date, description, user_id, bank_id, subcategory_id, shared_amount, amount)
+                        SELECT posted_date, description, user_id, bank_id, subcategory_id, shared_amount, amount 
+                        FROM temporary_transactions
+                        WHERE subcategory_id IS NOT NULL RETURNING *;
+                    """
+        delete_query = """DELETE FROM temporary_transactions
+                        WHERE subcategory_id IS NOT NULL;"""
+        async with database.pool.acquire() as conn:
+            rows = await conn.fetch(query)
+            if rows is not None:
+                await conn.execute(delete_query)
+                return [TransactionsModel(id=result['id'], posted_date=datetime.strftime(result['posted_date'], '%Y-%m-%d'), description=result['description'], user_id=result['user_id'], bank_id=result['bank_id'],
+                                          subcategory_id=result['subcategory_id'], shared_amount=result['shared_amount'],
+                                          amount=result['amount'])for result in rows]
             return None

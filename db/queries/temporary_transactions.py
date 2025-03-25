@@ -10,7 +10,7 @@ class TemporaryTransactionsModel(BaseModel):
     description: str
     user_id: int
     bank_id: int
-    subcategory_id: int
+    subcategory_id: Union[int, None]
     shared_amount: float
     amount: float
 

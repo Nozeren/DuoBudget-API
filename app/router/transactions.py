@@ -30,3 +30,8 @@ async def delete_row(id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"{id} content not found!")
     return row
+
+
+@router.put('/saveImport')
+async def saveImportedData():
+    return await Transactions().saveImportedData()
