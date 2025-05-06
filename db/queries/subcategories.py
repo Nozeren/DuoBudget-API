@@ -18,7 +18,7 @@ class Subcategories():
             return await conn.fetchrow(query)
 
     async def get_all_subcategories_categorized(self):
-        query = f'''SELECT subcategories.id, categories.name as category, subcategories.name as subcategory FROM subcategories
+        query = f'''SELECT subcategories.id, categories.id as category_id, categories.name as category, subcategories.name as subcategory FROM subcategories
                     LEFT JOIN categories
                     ON category_id = categories.id;''' 
         async with self.database.pool.acquire() as conn:

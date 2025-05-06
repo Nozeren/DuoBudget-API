@@ -29,8 +29,8 @@ async def upload_transactions(response: dict):
 
 
 @router.get('/')
-async def get_all_transactions():
-    return await TemporaryTransactions().get_all_transactions()
+async def get_all_transactions(data:dict):
+    return await TemporaryTransactions().get_all_transactions(data['user_id'], data['month'], data['year'])
 
 
 @router.put('/')
@@ -45,3 +45,7 @@ async def delete_row(id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"{id} content not found!")
     return row
+
+@router.get('/getfirstlastdate/{user_id}')
+async def get_first_last_date(user_id:int):
+    return await TemporaryTransactions().get_first_last_date(user_id)

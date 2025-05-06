@@ -5,8 +5,8 @@ router = APIRouter(prefix="/transactions")
 
 
 @router.get('/')
-async def get_all_transactions():
-    return await Transactions().get_all_transactions()
+async def get_all_transactions(data:dict):
+    return await Transactions().get_all_transactions(data['user_id'], data['month'], data['year'])
 
 
 @router.put('/')
@@ -35,3 +35,8 @@ async def delete_row(id: int):
 @router.put('/saveImport')
 async def saveImportedData():
     return await Transactions().saveImportedData()
+
+
+@router.get('/getfirstlastdate/{user_id}')
+async def get_first_last_date(user_id:int):
+    return await Transactions().get_first_last_date(user_id=user_id)
