@@ -7,6 +7,8 @@ from app.router import subcategories, temporary_transactions, transactions, budg
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+logger = logging.getLogger("asyncpg")
+logger.setLevel(logging.DEBUG)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

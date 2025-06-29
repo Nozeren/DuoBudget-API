@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from db.queries.users import UserModel, Users
+from db.queries.subcategories import Subcategories
 
 users_router = APIRouter(prefix="/users")
 
@@ -9,7 +10,8 @@ async def get_all_users()->list[UserModel]:
 
 @users_router.post('/')
 async def insert_user(user: UserModel):
-    return await Users().insert_user(user) 
+    user_id = await Users().insert_user(user) 
+    await Subcategories().load_initial_data(user_id)
 
 @users_router.delete('/{id}')
 async def delete_user(id:int):

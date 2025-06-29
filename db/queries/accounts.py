@@ -18,16 +18,35 @@ class Accounts():
     def __init__(self):
         self.database = database
 
+    async def refresh_balance(self):
+        query = """UPDATE accounts
+                    SET balance = t.amount
+                    FROM 
+                    (
+                            SELECT account_id,
+                            user_id,
+                            SUM(amount) as amount 
+                            FROM transactions
+                            GROUP BY account_id, user_id
+                            ) AS t
+
+                    WHERE t.user_id = accounts.user_id
+                    AND t.account_id = accounts.id"""
+        async with self.database.pool.acquire() as conn:
+            return await conn.execute(query) 
+
     async def get_accouts_by_user_id(self, user_id: int):
+        await self.refresh_balance()
         query = "SELECT * FROM accounts WHERE user_id = $1"
         async with self.database.pool.acquire() as conn:
             rows = await conn.fetch(query, user_id)
             if not rows:
                 return 
             data = [AccountsModal(id=row['id'], name=row['name'],
-                              type_id=row['type_id'], bank_id=row['bank_id'],
-                              user_id=row['user_id'], balance=row['balance']) for row in rows]
+                                  type_id=row['type_id'], bank_id=row['bank_id'],
+                                  user_id=row['user_id'], balance=row['balance']) for row in rows]
             return data
+
     async def get_accounts(self):
         query = "SELECT accounts.id, accounts.name, type_id, user_id, users.name as user_name, bank_id, balance FROM accounts LEFT JOIN users ON users.id = accounts.user_id"
         async with self.database.pool.acquire() as conn:
@@ -54,4 +73,4 @@ class Accounts():
             if not row:
                 return None
             return row
-        
+

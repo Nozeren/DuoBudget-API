@@ -19,11 +19,12 @@ class Users():
             rows = await conn.fetch(query)
             users = [UserModel(id=row['id'], name=row['name'], color=row['color']) for row in rows]
             return users
-    
+
     async def insert_user(self, user:UserModel):
-        query = "INSERT INTO users (name, color) VALUES ($1, $2) RETURNING *"
+        query = "INSERT INTO users (name, color) VALUES ($1, $2) RETURNING id"
         async with database.pool.acquire() as conn:
-            await conn.execute(query, user.name, user.color)
+            result = await conn.fetchrow(query, user.name, user.color)
+        return result["id"]
         
     async def delete_user(self, user_id: int):
         query = "DELETE FROM users WHERE id = $1 RETURNING *"

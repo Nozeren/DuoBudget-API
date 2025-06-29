@@ -11,3 +11,13 @@ async def get_all_budget(data:dict):
 @router.get('/getfirstlastdate')
 async def get_first_last_date():
     return await Budget().get_first_last_date()
+
+@router.put('/assigned')
+async def update_assigned(response: dict):
+    return await Budget().update_assigned(row_id=int(response['row_id']), value=response['value'])
+
+@router.get('/totalassigned/{user_id}')
+async def get_total_assigned(user_id:int):
+    return await Budget().get_total_assigned(user_id=user_id)
+
+
